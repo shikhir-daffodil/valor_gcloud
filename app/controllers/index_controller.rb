@@ -74,7 +74,7 @@ class IndexController < ApplicationController
 		disks = ["boot" => "true", "type" => "PERSISTENT", "autoDelete" => "true",
 			"initializeParams" => ["sourceImage" => "global/images/independent-game"]]
 
-    post_body = []
+    post_body = {}
     post_body["name"] = name
     post_body["machine_type"] = machine_type
     post_body["network_interfaces"] = network_interfaces
