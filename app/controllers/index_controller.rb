@@ -4,7 +4,7 @@ require 'net/http'
 
 class IndexController < ApplicationController
   def index
-		@compute = create_instance
+		@compute = create_instance_two
 		abort(@compute.inspect.to_s)
   end
 
