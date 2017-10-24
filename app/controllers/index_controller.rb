@@ -79,7 +79,7 @@ class IndexController < ApplicationController
     post_body["machine_type"] = machine_type
     post_body["network_interfaces"] = network_interfaces
     post_body["disks"] = disks
-    req.body = post_body.join
+    req.body = post_body
     res = Net::HTTP.start(url.host, url.port) {|http|
       http.request(req)
     }
