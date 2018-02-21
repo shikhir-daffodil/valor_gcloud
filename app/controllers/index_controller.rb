@@ -6,13 +6,13 @@ class IndexController < ApplicationController
   def index
     @project = 'valor-157707'
     @zone = 'us-central1-c'
-    @name = 'api test2'
+    @name = 'apitest2'
     @compute = create_instance
   end
 
   def get_token
     @token = get_authorization
-    # @data = set_fingerprint
+    @data = set_fingerprint
   end
 
   def get_instance_status
@@ -68,6 +68,9 @@ class IndexController < ApplicationController
     rescue
       raise "There was an error creating the instance"
     end
+    data = set_fingerprint
+    set_tags = network_http_tags(data["tags"]["fingerprint"])
+    set_metadata = set_metadata(data["metadata"]["fingerprint"])
     return true
   end
 
@@ -153,18 +156,8 @@ class IndexController < ApplicationController
     req.add_field("Accept", "application/json")
     req.add_field("Content-Type", "application/json")
     items = ['key' => 'startup-script', 'value' => '#! /bin/bash
-cd /var/www/html/src/govalor/
-git pull origin independent_dev_app
-export GOPATH=/var/www/html/
-export PATH=$PATH:/usr/local/go/bin
-export GOROOT="/usr/local/go"
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-go get
-go run govalor.go & disown
-cd /var/www/html/pmvalor
-git pull origin independent_dev_app_pmv
-mkdir /var/run/passenger
-/usr/sbin/nginx -c /var/www/html/pmvalor/docker/nginx/nginx.conf']
+su daffolap
+sh /home/daffolap/sidekiq.sh']
 
     post_body = {}
     post_body['items'] = items
