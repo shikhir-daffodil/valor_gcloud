@@ -6,20 +6,47 @@ class IndexController < ApplicationController
   def index
     @project = 'valor-157707'
     @zone = 'us-central1-c'
-    @name = 'apitest2'
+    @name = params[:name]
     @compute = create_instance
+    response_hash = {:data => @compute}
+    render :json => response_hash
   end
 
   def get_token
-    @token = get_authorization
+    @project = 'valor-157707'
+    @zone = 'us-central1-c'
+    @name = params[:name]
     @data = set_fingerprint
+    response_hash = {:data => @data}
+    render :json => response_hash
   end
 
   def get_instance_status
     @project = 'valor-157707'
     @zone = 'us-central1-c'
-    @name = 'instance-2'
+    @name = params[:name]
     @status = set_fingerprint["status"] # STOPPING, RUNNING, TERMINATED
+    @status = "TERMINATED" unless @status != nil
+    response_hash = {:status => @status}
+    render :json => response_hash
+  end
+
+  def stop_instance_action
+    @project = 'valor-157707'
+    @zone = 'us-central1-c'
+    @name = params[:name]
+    @status = stop_instance
+    response_hash = {:status => @status}
+    render :json => response_hash
+  end
+
+  def delete_instance_action
+    @project = 'valor-157707'
+    @zone = 'us-central1-c'
+    @name = params[:name]
+    @status = delete_instance
+    response_hash = {:status => @status}
+    render :json => response_hash
   end
 
  protected
@@ -46,7 +73,7 @@ class IndexController < ApplicationController
     req.add_field("Authorization", "Bearer #{access_token}")
     req.add_field("Accept", "application/json")
     req.add_field("Content-Type", "application/json")
-    machine_type = 'zones/us-central1-c/machineTypes/f1-micro'
+    machine_type = 'zones/us-central1-c/machineTypes/g1-small'
     network_interfaces = ['accessConfigs' => ['type' => 'ONE_TO_ONE_NAT', '@name' => 'External NAT'],
       'network' => 'global/networks/default']
     disks = ['boot' => 'true', 'type' => 'PERSISTENT', 'autoDelete' => 'true',
@@ -86,7 +113,7 @@ class IndexController < ApplicationController
       http.use_ssl = true
       response = http.request(req)
     rescue
-      raise "There was an error stopping the instance"
+      return false
     end
     return true
   end
@@ -119,7 +146,7 @@ class IndexController < ApplicationController
       req.add_field("Accept", "application/json")
       res = http.request(req)
     rescue
-      raise "There was an error deleting the instance"
+      return false
     end
     return true
   end
